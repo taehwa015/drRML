@@ -1,0 +1,2 @@
+importFrom("stats", "as.formula", "binomial", "glm", "lm", "predict","sd")
+export(dr_rml)
