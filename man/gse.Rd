@@ -3,7 +3,7 @@
 \docType{data}
 \name{gse}
 \alias{gse}
-\title{GSE6532 cohort study dataset (Loi et al., 2007)}
+\title{GSE6532 cohort study data}
 \format{
 A data frame including 374 observations with 7 variables:
 \describe{
