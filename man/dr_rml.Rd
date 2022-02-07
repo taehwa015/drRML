@@ -10,39 +10,53 @@ dr_rml(
   A,
   X,
   L,
-  PS = c("logis", "logis2", "SL", "GBM"),
+  PS = c("logit", "logit2", "SL", "GBM"),
   Reg = c("lm", "lm2", "SL"),
   nboot
 )
 }
 \arguments{
-\item{Y:}{outcome of interest}
+\item{Y:}{event time.}
 
-\item{Censor:}{censoring indicator, 1: observed; 0: right-censored}
+\item{Censor:}{censoring indicator, 1: observed; 0: right-censored.}
 
-\item{A:}{binary treatment indicator 1: treated; 0: untreated}
+\item{A:}{binary treatment indicator 1: treated; 0: untreated.}
 
-\item{X:}{baseline covariate}
+\item{X:}{baseline covariate.}
 
-\item{L:}{restrict timepoint to for RML}
+\item{L:}{a scalar value to truncate the timepoint for RML, \eqn{\code{L}< \max(\code{Y})}.}
 
-\item{PS:}{propensity score model}
+\item{PS:}{specify the propensity score model one of following options:
+\itemize{
+  \item \code{logit}: parametric logistic regression.
+  \item \code{logit2}: improved parametric logistic regression (Cao et al., 2009).
+  \item \code{SL}: super learner (package: \pkg{SuperLearner}) with libraries \code{SL.glm, SL.glm.interaction, SL.step}.
+  \item \code{GBM}: Generalized boosted model (package: \pkg{gbm}).
+}}
 
-\item{Reg:}{outcome regression mo  del}
+\item{Reg:}{specify the outcome regression model one of follwoing options:
+\itemize{
+  \item \code{lm}: parametric gaussian regression.
+  \item \code{lm2}: improved parametric gaussian regression (Cao et al., 2009).
+  \item \code{SL}: super learner (package: \pkg{SuperLearner}) with libraries \code{SL.glm, SL.glm.interaction, SL.step}.
+}}
 
-\item{nboot:}{number of bootstrap for standard error}
+\item{nboot:}{a numeric value to specify the number of bootstrap for standard error of ACE. If standard error estiamtes is unnecessary, use \code{nboot = 0}.}
 }
 \value{
-Returns of list with the following components:
+\code{dr_RML} returns a list with the following components:
 \itemize{
-  \item mu1: average effect for treated group
-  \item mu0: average effect for untreated group
-  \item ace: average causal effect mu1 - mu0
-  \item se: standard error estimates for ace with bootstrap
+  \item mu1: average effect for treated group.
+  \item mu0: average effect for untreated group.
+  \item ace: average causal effect mu1 - mu0.
+  \item se: standard error estimates for ace.
 }
 }
 \description{
-Estimate double-robust average causal estimator for restricted mean lifetime
+Estimate double-robust average causal estimator for restricted mean lifetime.
+}
+\details{
+see Choi et al., (2022+) for detailed method explanation.
 }
 \examples{
 \dontrun{
@@ -83,14 +97,7 @@ Censor = dt$delta
 A = dt$A
 
 X = dt[, 4:6]
-dr_rml(Y = Y,
-       Censor = Censor,
-       A = A,
-       X = X,
-       L = L,
-       PS = "logis",
-       Reg = "lm",
-       nboot = 10)$ace
+dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, PS = "logit", Reg = "lm", nboot = 10)$ace
 
 # Data Application
 data(gse)
@@ -99,19 +106,24 @@ Censor = dat$Censor
 A = dat$trt
 X = dat[, 3:6]
 L = 365 * 5
-dr_rml(Y = Y, Censor = Censor, A = A, X = X,
-       L = L, PS = "logis", Reg = "lm", nboot = 10)
+dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, PS = "logit", Reg = "lm", nboot = 10)
 
 library(tmle)
 prmst = pseudomean(Y, Censor, L)
 Xt = cova = as.data.frame(model.matrix( ~ -1 + Age + Size + Grade + Er, data = dat))
-fit = tmle(Y = prmst, A = A, W = cova,
+fit = tmle(
+  Y = prmst, A = A, W = cova,
   Q.SL.library = c("SL.glm", "SL.glm.interaction", "SL.step"),
-  g.SL.library =  c("SL.glm", "SL.glm.interaction", "SL.step"))
+  g.SL.library =  c("SL.glm", "SL.glm.interaction", "SL.step")
+)
 # Other methods
 tmsl = fit$estimates$ATE$psi
 library(grf)
 cffit = causal_forest(Xt, prmst, A)
 cf = mean(cffit$predictions)
 }
+}
+\references{
+Cao, W., Tsiatis, A. A., & Davidian, M. (2009). Improving efficiency and robustness of the doubly robust estimator for a population mean with incomplete data. \emph{Biometrika}, \bold{96}(3), 723--734.
+Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. \emph{In revision}.
 }
