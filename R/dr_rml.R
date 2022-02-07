@@ -1,3 +1,5 @@
+#' @importFrom stats as.formula binomial lm predict sd
+NULL
 #' Fit the DR-RML model
 #'
 #' Estimate double-robust average causal estimator for restricted mean lifetime.
