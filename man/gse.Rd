@@ -26,6 +26,31 @@ gse
 GSE6532 cohort study data of tamoxifen treatment for breast cancer patients to compare average causal effect in terms of RML (loi et al., 2007). 
 The dataset consists of 374 breast cancer patients: 255 patients in the tamoxifen treatment  group and 119 patients in the control group.
 }
+\examples{
+\dontrun{
+data(gse)
+Y = dat$Y
+Censor = dat$Censor
+A = dat$trt
+X = dat[, 3:6]
+L = 365 * 5
+dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, PS = "logit", Reg = "lm", nboot = 10)
+
+library(tmle)
+prmst = pseudomean(Y, Censor, L)
+Xt = cova = as.data.frame(model.matrix( ~ -1 + Age + Size + Grade + Er, data = dat))
+fit = tmle(
+  Y = prmst, A = A, W = cova,
+  Q.SL.library = c("SL.glm", "SL.glm.interaction", "SL.step"),
+  g.SL.library =  c("SL.glm", "SL.glm.interaction", "SL.step")
+)
+# Other methods
+tmsl = fit$estimates$ATE$psi
+library(grf)
+cffit = causal_forest(Xt, prmst, A)
+cf = mean(cffit$predictions)
+}
+}
 \references{
 Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. \emph{Journal of clinical oncology}, \bold{25}(10), 1239--1246.
 }

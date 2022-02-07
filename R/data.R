@@ -21,7 +21,7 @@
 #' @references
 #' Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. \emph{Journal of clinical oncology}, \bold{25}(10), 1239--1246.
 #' 
-#' @example
+#' @examples
 #' \dontrun{
 #' data(gse)
 #' Y = dat$Y
