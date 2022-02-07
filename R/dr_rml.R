@@ -109,6 +109,8 @@
 #' cf = mean(cffit$predictions)
 #' }
 #' @export
+#' 
+#' importFrom("stats", "as.formula", "binomial", "lm", "predict", "sd")
 dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL"), nboot) {
   est_func = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL")) {
     n = nrow(X)
@@ -120,12 +122,12 @@ dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Re
     dat = data.frame(prmst, A, X)
     formul = as.formula(paste0("A~", paste0("X", 1:p, collapse = "+")))
     if (PS == "logit") {
-      mod.p = glm(formul, family = binomial, data = dat)
-      p.1 = predict(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
+      mod.p = stats::glm(formul, family = stats::binomial(), data = dat)
+      p.1 = stats::predict.glm(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
     } else if (PS == "logit2") {
-      formul = as.formula(paste0("A~", paste0("X", 1:p, collapse = "+")))
-      mod.p = glm(formul, family = binomial, data = dat)
-      p.10 = predict(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
+      formul = stats::as.formula(paste0("A~", paste0("X", 1:p, collapse = "+")))
+      mod.p = stats::glm(formul, family = stats::binomial(), data = dat)
+      p.10 = stats::predict.glm(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
       idx1 = which(A == 1)
       idx0 = which(A == 0)
       d = log(mean(A * (1 + exp(p.10)) / exp(p.10)))
