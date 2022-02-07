@@ -7,13 +7,13 @@
 \format{
 A data frame including 374 observations with 7 variables:
 \describe{
-\item \code{Y}: time-to-distant metastasis free in days.
-\item \code{Censor}: censoring indicator (1: distant metastasis, 0: censored).
-\item \code{Age}: age in year
-\item \code{Grade}: Elston-Ellis grading system, 0 for non-cancer patients.
-\item \code{Size}: tumor size in centimeter.
-\item \code{Er}: estrogen receptor status excluding node (indicator of individual’s nodal status).
-\item \code{trt}: 1: Tamoxifen treated group, 0: untreated group.
+\item{Y}{time-to-distant metastasis free in days.}
+\item{Censor}{censoring indicator (1: distant metastasis, 0: censored).}
+\item{Age}{age in year.}
+\item{Grade}{Elston-Ellis grading system, 0 for non-cancer patients.}
+\item{Size}{tumor size in centimeter.}
+\item{Er}{estrogen receptor status excluding node (indicator of individual’s nodal status).}
+\item{trt}{1: Tamoxifen treated group, 0: untreated group.}
 }
 }
 \source{
@@ -24,7 +24,7 @@ gse
 }
 \description{
 GSE6532 cohort study data of tamoxifen treatment for breast cancer patients to compare average causal effect in terms of RML (loi et al., 2007). 
-The dataset consists of 414 breast cancer patients: 277 patients in the tamoxifen treatment  group and 137 patients in the control group.
+The dataset consists of 374 breast cancer patients: 255 patients in the tamoxifen treatment  group and 119 patients in the control group.
 }
 \references{
 Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. \emph{Journal of clinical oncology}, \bold{25}(10), 1239--1246.
