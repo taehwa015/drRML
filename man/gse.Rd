@@ -23,7 +23,7 @@ A data frame including 374 observations with 7 variables:
 gse
 }
 \description{
-GSE6532 cohort study data of tamoxifen treatment for breast cancer patients to compare average causal effect in terms of RML (loi et al., 2007). 
+GSE6532 cohort study data of tamoxifen treatment for breast cancer patients to compare average causal effect in terms of RML (Loi et al., 2007). 
 The dataset consists of 374 breast cancer patients: 255 patients in the tamoxifen treatment  group and 119 patients in the control group.
 }
 \examples{
