@@ -109,7 +109,6 @@
 #' }
 #' @export
 #' 
-#' @import stats as.formula binomial lm predict sd
 dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL"), nboot) {
   est_func = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL")) {
     n = nrow(X)
