@@ -30,15 +30,15 @@ dr_rml(
 \itemize{
   \item \code{logit}: parametric logistic regression.
   \item \code{logit2}: improved parametric logistic regression (Cao et al., 2009).
-  \item \code{SL}: super learner (package: \link{SuperLearner}) with libraries \code{SL.glm, SL.glm.interaction, SL.step}.
-  \item \code{GBM}: Generalized boosted model (package: \link{gbm}).
+  \item \code{SL}: super learner (package: \pkg{SuperLearner}) with libraries \code{SL.glm, SL.glm.interaction, SL.step}.
+  \item \code{GBM}: Generalized boosted model (package: \pkg{gbm}).
 }}
 
 \item{Reg:}{specify the outcome regression model one of follwoing options:
 \itemize{
   \item \code{lm}: parametric gaussian regression.
   \item \code{lm2}: improved parametric gaussian regression (Cao et al., 2009).
-  \item \code{SL}: super learner (package: \link{SuperLearner}) with libraries \code{SL.glm, SL.glm.interaction, SL.step}.
+  \item \code{SL}: super learner (package: \pkg{SuperLearner}) with libraries \code{SL.glm, SL.glm.interaction, SL.step}.
 }}
 
 \item{nboot:}{a numeric value to specify the number of bootstrap for standard error of ACE. If standard error estiamtes is unnecessary, use \code{nboot = 0}.}
@@ -129,6 +129,4 @@ cf = mean(cffit$predictions)
 Cao, W., Tsiatis, A. A., & Davidian, M. (2009). Improving efficiency and robustness of the doubly robust estimator for a population mean with incomplete data. \emph{Biometrika}, \bold{96}(3), 723--734.
 
 Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. \emph{In revision}.
-
-Polley, E., LeDell, E., Kennedy, C., & van der Laan, M. (2021). SuperLearner: Super Learner Prediction.
 }
