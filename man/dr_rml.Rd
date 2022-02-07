@@ -24,7 +24,7 @@ dr_rml(
 
 \item{X:}{baseline covariate.}
 
-\item{L:}{a scalar value to truncate the timepoint for RML, \eqn{\code{L}< \max(\code{Y})}.}
+\item{L:}{a scalar value to truncate the timepoint for RML, \code{L} < max(\code{Y}).}
 
 \item{PS:}{specify the propensity score model one of following options:
 \itemize{
@@ -80,13 +80,13 @@ simdata = function(n, tau) {
   T = rexp(n, par.t)                   # true surv time
   C = rexp(n, tau)                     # independent censoring
   # tau as a controller of censoring rate
-  Y = pmin(T, C)                        # observed time
-  delta = ifelse(T <= C, 1, 0)             # censoring indicator
+  Y = pmin(T, C)                       # observed time
+  delta = ifelse(T <= C, 1, 0)         # censoring indicator
   simdata = data.frame(Y = round(Y, 5), delta, A, Z1, Z2, Z3, T)
   simdata[order(Y), ]
 }
-L = 10       #tmax (setting | L=10; L=20)
-n = 600      #sample size
+L = 10       
+n = 600      
 tau = exp(-4.5)
 truepar = ifelse(L == 10, 0.871, 1.682)
 
@@ -97,7 +97,8 @@ Censor = dt$delta
 A = dt$A
 
 X = dt[, 4:6]
-dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, PS = "logit", Reg = "lm", nboot = 10)$ace
+dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
+       PS = "logit", Reg = "lm", nboot = 10)$ace
 
 # Data Application
 data(gse)
@@ -106,7 +107,8 @@ Censor = dat$Censor
 A = dat$trt
 X = dat[, 3:6]
 L = 365 * 5
-dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, PS = "logit", Reg = "lm", nboot = 10)
+dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
+       PS = "logit", Reg = "lm", nboot = 10)
 
 library(tmle)
 prmst = pseudomean(Y, Censor, L)

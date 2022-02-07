@@ -7,7 +7,7 @@
 #' @param Censor: censoring indicator, 1: observed; 0: right-censored.
 #' @param A: binary treatment indicator 1: treated; 0: untreated.
 #' @param X: baseline covariate.
-#' @param L: a scalar value to truncate the timepoint for RML, \eqn{\code{L}< \max(\code{Y})}.
+#' @param L: a scalar value to truncate the timepoint for RML, \code{L} < max(\code{Y}).
 #' @param PS: specify the propensity score model one of following options:
 #' \itemize{
 #'   \item \code{logit}: parametric logistic regression.
@@ -62,13 +62,13 @@
 #'   T = rexp(n, par.t)                   # true surv time
 #'   C = rexp(n, tau)                     # independent censoring
 #'   # tau as a controller of censoring rate
-#'   Y = pmin(T, C)                        # observed time
-#'   delta = ifelse(T <= C, 1, 0)             # censoring indicator
+#'   Y = pmin(T, C)                       # observed time
+#'   delta = ifelse(T <= C, 1, 0)         # censoring indicator
 #'   simdata = data.frame(Y = round(Y, 5), delta, A, Z1, Z2, Z3, T)
 #'   simdata[order(Y), ]
 #' }
-#' L = 10       #tmax (setting | L=10; L=20)
-#' n = 600      #sample size
+#' L = 10       
+#' n = 600      
 #' tau = exp(-4.5)
 #' truepar = ifelse(L == 10, 0.871, 1.682)
 #'
@@ -79,7 +79,8 @@
 #' A = dt$A
 #'
 #' X = dt[, 4:6]
-#' dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, PS = "logit", Reg = "lm", nboot = 10)$ace
+#' dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
+#'        PS = "logit", Reg = "lm", nboot = 10)$ace
 #'
 #' # Data Application
 #' data(gse)
@@ -88,7 +89,8 @@
 #' A = dat$trt
 #' X = dat[, 3:6]
 #' L = 365 * 5
-#' dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, PS = "logit", Reg = "lm", nboot = 10)
+#' dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
+#'        PS = "logit", Reg = "lm", nboot = 10)
 #'
 #' library(tmle)
 #' prmst = pseudomean(Y, Censor, L)
@@ -105,10 +107,8 @@
 #' cf = mean(cffit$predictions)
 #' }
 #' @export
-dr_rml = function(Y, Censor, A, X, L, 
-                  PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL"), nboot) {
-  est_func = function(Y, Censor, A, X, L,
-                      PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL")) {
+dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL"), nboot) {
+  est_func = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL")) {
     n = nrow(X)
     p = ncol(X)
     colnames(X) = paste0("X", 1:p)
