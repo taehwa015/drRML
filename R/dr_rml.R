@@ -87,17 +87,18 @@ NULL
 #'
 #' # Data Application
 #' data(gse)
-#' Y = dat$Y
-#' Censor = dat$Censor
-#' A = dat$trt
-#' X = dat[, 3:6]
+#' Y = gse$Y
+#' Censor = gse$Censor
+#' A = gse$trt
+#' X = gse[, 3:6]
 #' L = 365 * 5
 #' dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
 #'        PS = "logit", Reg = "lm", nboot = 10)
 #'
 #' library(tmle)
+#' library(pseudo)
 #' prmst = pseudomean(Y, Censor, L)
-#' Xt = cova = as.data.frame(model.matrix( ~ -1 + Age + Size + Grade + Er, data = dat))
+#' Xt = cova = as.data.frame(model.matrix( ~ -1 + Age + Size + Grade + Er, data = gse))
 #' fit = tmle(
 #'   Y = prmst, A = A, W = cova,
 #'   Q.SL.library = c("SL.glm", "SL.glm.interaction", "SL.step"),
