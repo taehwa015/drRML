@@ -187,7 +187,7 @@ dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Re
     
     return(res)
   }
-  
+  if (L >= max(Y)) stop("L should be less than max(Y)")
   res = est = est_func(Y, Censor, A, X, L, PS, Reg)
   if (nboot > 1) {
     res$se = sd(replicate(nboot, {
