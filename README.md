@@ -1,4 +1,8 @@
-# Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations
+# drRML: R package for estimating differences in restricted mean lifetimes
+
+## Overview
+
+drRML is the R package to estimate differences in restricted mean lifetimes of two treatments using pseudo-observations.
 
 ## Installation
 ```r
