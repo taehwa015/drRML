@@ -2,7 +2,7 @@
 NULL
 #' Fit the DR-RML model
 #'
-#' Estimate double-robust average causal estimator for restricted mean lifetime.
+#' Estimate double-robust average causal effect for restricted mean lifetime.
 #'
 #'
 #' @param Y: event time.
@@ -10,14 +10,14 @@ NULL
 #' @param A: binary treatment indicator 1: treated; 0: untreated.
 #' @param X: baseline covariate.
 #' @param L: a scalar value to truncate the timepoint for RML, \code{L} < max(\code{Y}).
-#' @param PS: specify the propensity score model one of following options:
+#' @param PS: specify the propensity score model from one of following options:
 #' \itemize{
 #'   \item \code{logit}: parametric logistic regression.
 #'   \item \code{logit2}: improved parametric logistic regression (Cao et al., 2009).
 #'   \item \code{SL}: super learner (package: \pkg{SuperLearner}) with libraries \code{SL.glm, SL.glm.interaction, SL.step}.
 #'   \item \code{GBM}: Generalized boosted model (package: \pkg{gbm}).
 #' }
-#' @param Reg: specify the outcome regression model one of follwoing options:
+#' @param Reg: specify the outcome regression model from one of follwoing options:
 #' \itemize{
 #'   \item \code{lm}: parametric gaussian regression.
 #'   \item \code{lm2}: improved parametric gaussian regression (Cao et al., 2009).
@@ -26,12 +26,12 @@ NULL
 #' @param nboot: a numeric value to specify the number of bootstrap for standard error of ACE. If standard error estiamtes is unnecessary, use \code{nboot = 0}.
 #' 
 #' 
-#' @return \code{dr_RML} returns a list with the following components:
+#' @return \code{dr_RML} returns a list containing at least the following components:
 #' \itemize{
-#'   \item mu1: average effect for treated group.
-#'   \item mu0: average effect for untreated group.
-#'   \item ace: average causal effect mu1 - mu0.
-#'   \item se: standard error estimates for ace.
+#'   \item \code{mu1}: average effect for treated group.
+#'   \item \code{mu0}: average effect for untreated group.
+#'   \item \code{ace}: average causal effect \code{mu1} - \code{mu0}.
+#'   \item \code{se}: standard error estimates for \code{ace}.
 #' }
 #' 
 #' @details 
