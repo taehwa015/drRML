@@ -6,7 +6,7 @@ library(devtools)
 devtools::install_github(repo='taehwa015/drRML')
 ```
 
-## Status of developement
+## Status of development
 
 The code provided here is only being provided for research purposes.
 
@@ -17,16 +17,18 @@ See Choi et al. (2022+) for Detailed description of the method.
 
 Below example is the GSE6532 data application in the article.
 ```r
+library(drRML)
 data(gse)
- Y = dat$Y
- Censor = dat$Censor
- A = dat$trt
- X = dat[, 3:6]
+ Y = gse$Y
+ Censor = gse$Censor
+ A = gse$trt
+ X = gse[, 3:6]
  L = 365 * 5
  dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
         PS = "logit", Reg = "lm", nboot = 10)
 
  library(tmle)
+ library(pseudo)
  prmst = pseudomean(Y, Censor, L)
  Xt = cova = as.data.frame(model.matrix( ~ -1 + Age + Size + Grade + Er, data = dat))
  fit = tmle(
