@@ -16,7 +16,7 @@ The code provided here is only being provided for research purposes.
 
 ## Documentation
 
-Vignette is available at [here](https://github.com/taehwa015/drRML/blob/master/vignettes/drRML.html)
+Vignette is available at [here](http://htmlpreview.github.io/?https://github.com/taehwa015/drRML/blob/master/vignettes/drRML.html)
 
 ## Usage
 
