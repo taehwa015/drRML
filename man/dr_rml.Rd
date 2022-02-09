@@ -8,7 +8,8 @@ dr_rml(
   Y,
   Censor,
   A,
-  X,
+  Xps,
+  Xreg,
   L,
   PS = c("logit", "logit2", "SL", "GBM"),
   Reg = c("lm", "lm2", "SL"),
@@ -22,7 +23,9 @@ dr_rml(
 
 \item{A:}{binary treatment indicator 1: treated; 0: untreated.}
 
-\item{X:}{baseline covariate.}
+\item{Xps:}{baseline covariate for fitting propensity score model of \code{A}=1.}
+
+\item{Xreg:}{baseline covariate for fitting outcome regression model.}
 
 \item{L:}{a scalar value to truncate the timepoint for RML, \code{L} < max(\code{Y}).}
 
@@ -97,8 +100,8 @@ Censor = dt$delta
 A = dt$A
 
 X = dt[, 4:6]
-dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
-       PS = "logit", Reg = "lm", nboot = 10)$ace
+dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
+       L = L, PS = "logit", Reg = "lm", nboot = 10)$ace
 
 # Data Application
 data(gse)
@@ -107,8 +110,8 @@ Censor = gse$Censor
 A = gse$trt
 X = gse[, 3:6]
 L = 365 * 5
-dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
-       PS = "logit", Reg = "lm", nboot = 10)
+dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
+       L = L, PS = "logit", Reg = "lm", nboot = 10)
 
 library(tmle)
 library(pseudo)

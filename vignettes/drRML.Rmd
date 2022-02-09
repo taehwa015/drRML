@@ -1,0 +1,145 @@
+---
+title: "Introduction to drRML package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to drRML package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%",
+  fig.width = 7,
+  fig.height = 4,
+  fig.align = "center",
+  dpi = 150,
+  fig.path = "vignettes/drRML-"
+)
+```
+
+## Introduction
+
+`drRML` is the R package to estimate differences in restricted mean lifetimes (RML) of two treatments using pseudo-observations.
+Define $T$ and $C$ as the event time and right-censoring times, respectively.
+Then we observe $\{Y_i = T_i\wedge C_i,\Delta_i = I(T_i\le C_i),Z_i\}_{i=1}^n$, 
+where $Z_i$ is $p-$dimensional baseline covariate vector.
+We adopt the pseudo-observation (available in `pseudo` R package)
+to replace unknown event times,
+$$
+\hat \theta^*_{i}
+	= n\cdot\int_{0}^{L}\hat{S}(t) dt - (n-1)\cdot\int_{0}^{L}\hat{S}^{-i}(t)dt,
+$$
+where $L$ is fixed time point for RML and $\hat S(t)$ is the empirical survival estimates, such as the Kaplan-Meier estimator.
+Then, the double robust estimator for average causal effect is defined as
+$$
+\hat\delta_{DR} = \hat\mu_1^{DR}-\hat\mu_0^{DR},
+$$
+where $\hat\mu_a^{DR}~(a=0,1)$ can be expressed as
+$$
+\hat\mu_a^{DR} = n^{-1}\sum_{i=1}^n
+	\frac{I(A_i=a)}{\tilde \pi_a(Z_i;\hat\gamma)}\hat\theta^*_i
+	+ n^{-1}\sum_{i=1}^n \left\{1- \frac{I(A_i=a)}{\tilde\pi_a(Z_i;\hat\gamma)} \right\} m(a,Z_i;\hat\beta).
+$$
+Here, $\tilde \pi_a(Z_i;\gamma) = a\pi(Z;\gamma) + (1-a) \{1-\pi(Z;\gamma) \}$ 
+is the propensity score, estimated by logistic regression or machine learning approaches (e.g., `SuperLearner`, `gbm` packages in R).
+In addition, $m(a,Z_i;\beta)$ is the outcome regression model, estimated by
+linear regression or machine learning approaches (e.g., `SuperLearner` in R).
+See Choi et al. (2022+) for more detailed description of the method.
+
+
+
+## Installation
+```{r}
+library(devtools)
+devtools::install_github(repo='taehwa015/drRML')
+```
+
+
+## Usage
+
+The `drRML` package provides a double-robust estimator for differences in restricted mean lifetimes using pseudo-observations.
+
+Below example is one of simulation set-up in Choi et al. (2022+).
+Simulated event time variable involves three covariates
+$Z=(Z_1,Z_2,Z_3)'$ distributed as multivariate normal with mean zero, unit variance, corr$(Z_1,Z_3)=0.2$, with all other pairwise correlations set to be 0. The treatment variable $A\in\{0,1\}$ is created from a logistic regression model with $P(A=1|Z)=\text{expit}(-0.5 Z_1-0.5 Z_2)$, where $\text{expit}(x)=1/(1+e^{-x})$.
+Then the event time $T$ is generated from an exponential distribution with rate $\exp(-3-Z_1-0.9 Z_2-Z_3)$ for treatment $A=1$, and $\exp(-2.5-1.5Z_1-Z_2-0.7Z_3)$ for $A=0$.
+The censoring time $C$ follows an exponential with rate $e^{-4.5}$, yielding approximately 25\% censoring.
+```{r}
+simdata = function(n, tau) {
+  require(mvtnorm)
+  expit = function(x) exp(x) / (1 + exp(x))
+  Sigma = diag(rep(1, 3))
+  Sigma[1, 3] = Sigma[3, 1] = 0.2
+  Z = rmvnorm(n,
+              mean = rep(0, 3),
+              sigma = Sigma,
+              method = "chol")
+  Z1 = Z[, 1]
+  Z2 = Z[, 2]
+  Z3 = Z[, 3]
+  # trt indicator (Bernoulli)
+  A = rbinom(n, 1, expit(-0.5 * Z1 - 0.5 * Z2))# Z1 and Z2 are involved in trt assignment
+  par.t = exp((-2.5 - 1.5 * Z1 - 1 * Z2 - 0.7 * Z3) * (A == 0) +
+                (-3 - 1 * Z1 - 0.9 * Z2 - 1 * Z3) * (A == 1))
+  T = rexp(n, par.t)                   # true surv time
+  C = rexp(n, tau)                     # independent censoring
+  # tau as a controller of censoring rate
+  Y = pmin(T, C)                       # observed time
+  delta = ifelse(T <= C, 1, 0)         # censoring indicator
+  simdata = data.frame(Y = round(Y, 5), delta, A, Z1, Z2, Z3, T)
+  simdata[order(Y), ]
+}
+L = 10       
+n = 600      
+tau = exp(-4.5)
+truepar = ifelse(L == 10, 0.871, 1.682)
+
+set.seed(123)
+dt = simdata(n, tau)
+Y = dt$Y
+Censor = dt$delta
+A = dt$A
+X = dt[, 4:6]
+```
+
+Once we estimate $\pi(Z;\gamma)$ and $m(a,Z;\beta)$
+from logistic and gaussian regressions, respectively,
+`dr_rml` can be used by specifying `PS = "logit"` and
+`Reg = "lm"`,
+while 10 bootstrapped samples are considered for standard error estimates of ACE (`nboot = 10`).
+```{r}
+dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X, 
+       L = L, PS = "logit", Reg = "lm", nboot = 10)$ace
+```
+Even if we assume the misspecified propensity score by omiting $Z_2$,
+proposed estimator still consistent.
+```{r}
+dr_rml(Y = Y, Censor = Censor, A = A, Xps = X[,-2], Xreg = X, 
+       L = L, PS = "logit", Reg = "lm", nboot = 10)$ace
+```
+
+For flexible estimation, we may alternatively use other machine learning methods. For example, we estimate the propensity score model from super learner
+(`PS = "SL"`)
+```{r}
+dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
+       L = L, PS = "SL", Reg = "lm", nboot = 10)$ace
+```
+
+Below example is the GSE6532 data application in the article.
+```{r}
+library(drRML)
+data(gse)
+Y = gse$Y
+Censor = gse$Censor
+A = gse$trt
+X = gse[, 3:6]
+L = 365 * 5
+dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
+       L = L, PS = "logit", Reg = "lm", nboot = 10)
+```
+
+
+

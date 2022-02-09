@@ -8,7 +8,8 @@ NULL
 #' @param Y: event time.
 #' @param Censor: censoring indicator, 1: observed; 0: right-censored.
 #' @param A: binary treatment indicator 1: treated; 0: untreated.
-#' @param X: baseline covariate.
+#' @param Xps: baseline covariate for fitting propensity score model of \code{A}=1.
+#' @param Xreg: baseline covariate for fitting outcome regression model.
 #' @param L: a scalar value to truncate the timepoint for RML, \code{L} < max(\code{Y}).
 #' @param PS: specify the propensity score model from one of following options:
 #' \itemize{
@@ -82,8 +83,8 @@ NULL
 #' A = dt$A
 #'
 #' X = dt[, 4:6]
-#' dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
-#'        PS = "logit", Reg = "lm", nboot = 10)$ace
+#' dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
+#'        L = L, PS = "logit", Reg = "lm", nboot = 10)$ace
 #'
 #' # Data Application
 #' data(gse)
@@ -92,8 +93,8 @@ NULL
 #' A = gse$trt
 #' X = gse[, 3:6]
 #' L = 365 * 5
-#' dr_rml(Y = Y, Censor = Censor, A = A, X = X, L = L, 
-#'        PS = "logit", Reg = "lm", nboot = 10)
+#' dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
+#'        L = L, PS = "logit", Reg = "lm", nboot = 10)
 #'
 #' library(tmle)
 #' library(pseudo)
@@ -112,32 +113,32 @@ NULL
 #' }
 #' @export
 #' 
-dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL"), nboot) {
-  est_func = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL")) {
-    n = nrow(X)
-    p = ncol(X)
-    colnames(X) = paste0("X", 1:p)
+dr_rml = function(Y, Censor, A, Xps, Xreg, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL"), nboot) {
+  est_func = function(Y, Censor, A, Xps, Xreg, L, PS = c("logit", "logit2", "SL", "GBM"), Reg = c("lm", "lm2", "SL")) {
+    n = length(Y)
+    p1 = ncol(Xps)
+    p2 = ncol(Xreg)
+    colnames(Xps) = paste0("X", 1:p1)
+    colnames(Xreg) = paste0("X", 1:p2)
     prmst = pseudo::pseudomean(time = Y,
                                event = Censor,
                                tmax = L)
-    dat = data.frame(prmst, A, X)
-    formul = as.formula(paste0("A~", paste0("X", 1:p, collapse = "+")))
+    idx1 = which(A == 1)
+    idx0 = which(A == 0)
+    dat = data.frame(A, Xps)
+    formul = as.formula("A~.")
     if (PS == "logit") {
       mod.p = stats::glm(formul, family = stats::binomial(), data = dat)
       p.1 = stats::predict.glm(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
     } else if (PS == "logit2") {
-      formul = stats::as.formula(paste0("A~", paste0("X", 1:p, collapse = "+")))
       mod.p = stats::glm(formul, family = stats::binomial(), data = dat)
       p.10 = stats::predict.glm(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
-      idx1 = which(A == 1)
-      idx0 = which(A == 0)
+      
       d = log(mean(A * (1 + exp(p.10)) / exp(p.10)))
       p.1 = as.numeric(exp(d + p.10) / (1 + exp(p.10)))
     } else if (PS == "SL") {
       options(warn = -1)
-      Xt = with(dat, model.matrix(as.formula(paste0(
-        "~-1+", paste0("X", 1:p, collapse = "+")
-      ))))
+      Xt = with(dat, model.matrix(as.formula(paste0("~-1+", paste0("X", 1:p1, collapse = "+")))))
       Xt = as.data.frame(Xt)
       slpi = SuperLearner::SuperLearner(
         Y = A,
@@ -150,17 +151,21 @@ dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Re
       gfit = gbm::gbm(formul, data = dat, distribution = "bernoulli")
       p.1 = gbm::predict.gbm(gfit, dat, n.trees = 100, type = "response")
     }
-    formul = as.formula(paste0("prmst~", paste0("X", 1:p, collapse = "+")))
+    
+    dat = data.frame(prmst, A, Xreg)
+    formul = as.formula(paste0("prmst~", paste0("X", 1:p2, collapse = "+")))
     if (Reg == "lm") {
       mod.m0 = predict(lm(formul, data = subset(dat, A == 0)), newdata = dat)
       mod.m1 = predict(lm(formul, data = subset(dat, A == 1)), newdata = dat)
     } else if (Reg == "lm2") {
       wt1 = ((1 - p.1) / p.1 ^ 2)[idx1]
       wt0 = ((p.1) / (1 - p.1) ^ 2)[idx0]
-      formul = as.formula(paste0("prmst~", paste0("X", 1:p, collapse = "+")))
+      formul = as.formula(paste0("prmst~", paste0("X", 1:p2, collapse = "+")))
       mod.m1 = predict(lm(formul, data = subset(dat, A == 1), weights = wt1), dat)
       mod.m0 = predict(lm(formul, data = subset(dat, A == 0), weights = wt0), dat)
     } else if (Reg == "SL") {
+      Xt = with(dat, model.matrix(as.formula(paste0("~-1+", paste0("X", 1:p2, collapse = "+")))))
+      Xt = as.data.frame(Xt)
       mod.m0 = with(dat,
                     SuperLearner::SuperLearner(
                       Y = prmst[A == 1],
@@ -188,12 +193,12 @@ dr_rml = function(Y, Censor, A, X, L, PS = c("logit", "logit2", "SL", "GBM"), Re
     return(res)
   }
   if (L >= max(Y)) stop("L should be less than max(Y)")
-  res = est = est_func(Y, Censor, A, X, L, PS, Reg)
+  res = est = est_func(Y, Censor, A, Xps, Xreg, L, PS, Reg)
   if (nboot > 1) {
     res$se = sd(replicate(nboot, {
       n = length(Y)
       ind = sample(n, n, replace = TRUE)
-      est_func(Y[ind], Censor[ind], A[ind], X[ind, ], L, PS, Reg)$ace
+      est_func(Y[ind], Censor[ind], A[ind], Xps[ind, ], Xreg[ind, ], L, PS, Reg)$ace
     }))
   }
   return(res)
