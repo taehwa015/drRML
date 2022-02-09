@@ -321,7 +321,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p><code>drRML</code> is the R package to estimate differences in restricted mean lifetimes (RML) of two treatments using pseudo-observations. Define <span class="math inline">\(T\)</span> and <span class="math inline">\(C\)</span> as the event time and right-censoring times, respectively. Then we observe <span class="math inline">\(\{Y_i = T_i\wedge C_i,\Delta_i = I(T_i\le C_i),Z_i\}_{i=1}^n\)</span>, where <span class="math inline">\(Z_i\)</span> is <span class="math inline">\(p-\)</span>dimensional baseline covariate vector. We adopt the pseudo-observation (available in <code>pseudo</code> R package) to replace unknown event times, <span class="math display">\[
+<p><code>drRML</code> is the R package to estimate differences in restricted mean lifetimes (RML) of two treatments using pseudo-observations. Define <span class="math inline">\(T\)</span> and <span class="math inline">\(C\)</span> as the event time and right-censoring times, respectively. Then we observe <span class="math inline">\(\{Y_i = T_i\wedge C_i,\Delta_i = I(T_i\le C_i),Z_i\}_{i=1}^n\)</span>, where <span class="math inline">\(Z_i\)</span> is <span class="math inline">\(p-\)</span>dimensional baseline covariate vector. We adopt the pseudo-observation (available in <code>pseudo</code> R package) to replace unknown event times with their respective consistent jackknife-type estimates, <span class="math display">\[
 \hat \theta^*_{i}
     = n\cdot\int_{0}^{L}\hat{S}(t) dt - (n-1)\cdot\int_{0}^{L}\hat{S}^{-i}(t)dt,
 \]</span> where <span class="math inline">\(L\)</span> is fixed time point for RML and <span class="math inline">\(\hat S(t)\)</span> is the empirical survival estimates, such as the Kaplan-Meier estimator. Then, the double robust estimator for average causal effect is defined as <span class="math display">\[
@@ -396,7 +396,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; Version: 2.0-28</span></span>
 <span id="cb5-11"><a href="#cb5-11"></a><span class="co">#&gt; Package created on 2021-05-04</span></span>
 <span id="cb5-12"><a href="#cb5-12"></a><span class="co">#&gt; [1] 0.9156718</span></span></code></pre></div>
-<p>Below example is the GSE6532 data (Loi et al., 2007) application in the article.</p>
+<p>Below example is the GSE6532 data (Loi et al., 2007) application in the article (Choi et al., 2022+).</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">data</span>(gse)</span>
 <span id="cb6-2"><a href="#cb6-2"></a>Y =<span class="st"> </span>gse<span class="op">$</span>Y</span>
 <span id="cb6-3"><a href="#cb6-3"></a>Censor =<span class="st"> </span>gse<span class="op">$</span>Censor</span>
@@ -416,12 +416,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb6-17"><a href="#cb6-17"></a><span class="co">#&gt; </span></span>
 <span id="cb6-18"><a href="#cb6-18"></a><span class="co">#&gt; $se</span></span>
 <span id="cb6-19"><a href="#cb6-19"></a><span class="co">#&gt; [1] 101.0599</span></span></code></pre></div>
+<p>The estiamted average causal effect with 5-year RML <span class="math inline">\(\hat\delta=91.62\)</span> implies that the Tamoxifen (coded as 1) is positive treatment for time-to-distant metastasis free.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
 <ul>
-<li><p>Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. .</p></li>
-<li><p>Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. , (10), 1239–1246.</p></li>
+<li><p>Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. <em>In revision</em>.</p></li>
+<li><p>Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. <em>Journal of clinical oncology</em>, <strong>25</strong>(10), 1239–1246.</p></li>
 </ul>
 </div>
 
