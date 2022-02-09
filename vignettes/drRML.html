@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to drRML package</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to drRML package</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p><code>drRML</code> is the R package to estimate differences in restricted mean lifetimes (RML) of two treatments using pseudo-observations. Define <span class="math inline">\(T\)</span> and <span class="math inline">\(C\)</span> as the event time and right-censoring times, respectively. Then we observe <span class="math inline">\(\{Y_i = T_i\wedge C_i,\Delta_i = I(T_i\le C_i),Z_i\}_{i=1}^n\)</span>, where <span class="math inline">\(Z_i\)</span> is <span class="math inline">\(p-\)</span>dimensional baseline covariate vector. We adopt the pseudo-observation (available in <code>pseudo</code> R package) to replace unknown event times, <span class="math display">\[
+\hat \theta^*_{i}
+    = n\cdot\int_{0}^{L}\hat{S}(t) dt - (n-1)\cdot\int_{0}^{L}\hat{S}^{-i}(t)dt,
+\]</span> where <span class="math inline">\(L\)</span> is fixed time point for RML and <span class="math inline">\(\hat S(t)\)</span> is the empirical survival estimates, such as the Kaplan-Meier estimator. Then, the double robust estimator for average causal effect is defined as <span class="math display">\[
+\hat\delta_{DR} = \hat\mu_1^{DR}-\hat\mu_0^{DR},
+\]</span> where <span class="math inline">\(\hat\mu_a^{DR}~(a=0,1)\)</span> can be expressed as <span class="math display">\[
+\hat\mu_a^{DR} = n^{-1}\sum_{i=1}^n
+    \frac{I(A_i=a)}{\tilde \pi_a(Z_i;\hat\gamma)}\hat\theta^*_i
+    + n^{-1}\sum_{i=1}^n \left\{1- \frac{I(A_i=a)}{\tilde\pi_a(Z_i;\hat\gamma)} \right\} m(a,Z_i;\hat\beta).
+\]</span> Here, <span class="math inline">\(\tilde \pi_a(Z_i;\gamma) = a\pi(Z;\gamma) + (1-a) \{1-\pi(Z;\gamma) \}\)</span> is the propensity score, estimated by logistic regression or machine learning approaches (e.g., <code>SuperLearner</code>, <code>gbm</code> packages in R). In addition, <span class="math inline">\(m(a,Z_i;\beta)\)</span> is the outcome regression model, estimated by linear regression or machine learning approaches (e.g., <code>SuperLearner</code> in R). See Choi et al. (2022+) for more detailed description of the method.</p>
+</div>
+<div id="usage-for-dr_rml" class="section level2">
+<h2>Usage for <code>dr_rml()</code></h2>
+<p><code>dr_rml()</code> function has the following arguments:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">dr_rml</span>(Y, Censor, A, Xps, Xreg, L, PS, Reg, nboot)</span></code></pre></div>
+<p>see the detailed description from <code>help(dr_rml)</code>.</p>
+<p>Below example is one of simulation set-up in Choi et al. (2022+). Simulated event time variable involves three covariates <span class="math inline">\(Z=(Z_1,Z_2,Z_3)&#39;\)</span> distributed as multivariate normal with mean zero, unit variance, corr<span class="math inline">\((Z_1,Z_3)=0.2\)</span>, with all other pairwise correlations set to be 0. The treatment variable <span class="math inline">\(A\in\{0,1\}\)</span> is created from a logistic regression model with <span class="math inline">\(P(A=1|Z)=\text{expit}(-0.5 Z_1-0.5 Z_2)\)</span>, where <span class="math inline">\(\text{expit}(x)=1/(1+e^{-x})\)</span>. Then the event time <span class="math inline">\(T\)</span> is generated from an exponential distribution with rate <span class="math inline">\(\exp(-3-Z_1-0.9 Z_2-Z_3)\)</span> for treatment <span class="math inline">\(A=1\)</span>, and <span class="math inline">\(\exp(-2.5-1.5Z_1-Z_2-0.7Z_3)\)</span> for <span class="math inline">\(A=0\)</span>. The censoring time <span class="math inline">\(C\)</span> follows an exponential with rate <span class="math inline">\(e^{-4.5}\)</span>, yielding approximately 25% censoring.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(drRML)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>simdata =<span class="st"> </span><span class="cf">function</span>(n, tau) {</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="kw">require</span>(mvtnorm)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  expit =<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">exp</span>(x) <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(x))</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  Sigma =<span class="st"> </span><span class="kw">diag</span>(<span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  Sigma[<span class="dv">1</span>, <span class="dv">3</span>] =<span class="st"> </span>Sigma[<span class="dv">3</span>, <span class="dv">1</span>] =<span class="st"> </span><span class="fl">0.2</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>  Z =<span class="st"> </span><span class="kw">rmvnorm</span>(n,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>              <span class="dt">mean =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>),</span>
+<span id="cb2-9"><a href="#cb2-9"></a>              <span class="dt">sigma =</span> Sigma,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>              <span class="dt">method =</span> <span class="st">&quot;chol&quot;</span>)</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  Z1 =<span class="st"> </span>Z[, <span class="dv">1</span>]</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  Z2 =<span class="st"> </span>Z[, <span class="dv">2</span>]</span>
+<span id="cb2-13"><a href="#cb2-13"></a>  Z3 =<span class="st"> </span>Z[, <span class="dv">3</span>]</span>
+<span id="cb2-14"><a href="#cb2-14"></a>  <span class="co"># trt indicator (Bernoulli)</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a>  A =<span class="st"> </span><span class="kw">rbinom</span>(n, <span class="dv">1</span>, <span class="kw">expit</span>(<span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>Z1 <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>Z2))<span class="co"># Z1 and Z2 are involved in trt assignment</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a>  par.t =<span class="st"> </span><span class="kw">exp</span>((<span class="op">-</span><span class="fl">2.5</span> <span class="op">-</span><span class="st"> </span><span class="fl">1.5</span> <span class="op">*</span><span class="st"> </span>Z1 <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="op">*</span><span class="st"> </span>Z2 <span class="op">-</span><span class="st"> </span><span class="fl">0.7</span> <span class="op">*</span><span class="st"> </span>Z3) <span class="op">*</span><span class="st"> </span>(A <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="op">+</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="st">                </span>(<span class="op">-</span><span class="dv">3</span> <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="op">*</span><span class="st"> </span>Z1 <span class="op">-</span><span class="st"> </span><span class="fl">0.9</span> <span class="op">*</span><span class="st"> </span>Z2 <span class="op">-</span><span class="st"> </span><span class="dv">1</span> <span class="op">*</span><span class="st"> </span>Z3) <span class="op">*</span><span class="st"> </span>(A <span class="op">==</span><span class="st"> </span><span class="dv">1</span>))</span>
+<span id="cb2-18"><a href="#cb2-18"></a>  T =<span class="st"> </span><span class="kw">rexp</span>(n, par.t)                   <span class="co"># true surv time</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a>  C =<span class="st"> </span><span class="kw">rexp</span>(n, tau)                     <span class="co"># independent censoring</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>  <span class="co"># tau as a controller of censoring rate</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>  Y =<span class="st"> </span><span class="kw">pmin</span>(T, C)                       <span class="co"># observed time</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  delta =<span class="st"> </span><span class="kw">ifelse</span>(T <span class="op">&lt;=</span><span class="st"> </span>C, <span class="dv">1</span>, <span class="dv">0</span>)         <span class="co"># censoring indicator</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a>  simdata =<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Y =</span> <span class="kw">round</span>(Y, <span class="dv">5</span>), delta, A, Z1, Z2, Z3, T)</span>
+<span id="cb2-24"><a href="#cb2-24"></a>  simdata[<span class="kw">order</span>(Y), ]</span>
+<span id="cb2-25"><a href="#cb2-25"></a>}</span>
+<span id="cb2-26"><a href="#cb2-26"></a>L =<span class="st"> </span><span class="dv">10</span>       </span>
+<span id="cb2-27"><a href="#cb2-27"></a>n =<span class="st"> </span><span class="dv">600</span>      </span>
+<span id="cb2-28"><a href="#cb2-28"></a>tau =<span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span><span class="fl">4.5</span>)</span>
+<span id="cb2-29"><a href="#cb2-29"></a>truepar =<span class="st"> </span><span class="kw">ifelse</span>(L <span class="op">==</span><span class="st"> </span><span class="dv">10</span>, <span class="fl">0.871</span>, <span class="fl">1.682</span>)</span>
+<span id="cb2-30"><a href="#cb2-30"></a></span>
+<span id="cb2-31"><a href="#cb2-31"></a><span class="kw">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-32"><a href="#cb2-32"></a>dt =<span class="st"> </span><span class="kw">simdata</span>(n, tau)</span>
+<span id="cb2-33"><a href="#cb2-33"></a><span class="co">#&gt; Loading required package: mvtnorm</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a>Y =<span class="st"> </span>dt<span class="op">$</span>Y</span>
+<span id="cb2-35"><a href="#cb2-35"></a>Censor =<span class="st"> </span>dt<span class="op">$</span>delta</span>
+<span id="cb2-36"><a href="#cb2-36"></a>A =<span class="st"> </span>dt<span class="op">$</span>A</span>
+<span id="cb2-37"><a href="#cb2-37"></a>X =<span class="st"> </span>dt[, <span class="dv">4</span><span class="op">:</span><span class="dv">6</span>]</span></code></pre></div>
+<p>Once we estimate <span class="math inline">\(\pi(Z;\gamma)\)</span> and <span class="math inline">\(m(a,Z;\beta)\)</span> from logistic and gaussian regressions, respectively, <code>dr_rml</code> can be used by specifying <code>PS = &quot;logit&quot;</code> and <code>Reg = &quot;lm&quot;</code>, while 10 bootstrapped samples are considered for standard error estimates of ACE (<code>nboot = 10</code>).</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">dr_rml</span>(<span class="dt">Y =</span> Y, <span class="dt">Censor =</span> Censor, <span class="dt">A =</span> A, <span class="dt">Xps =</span> X, <span class="dt">Xreg =</span> X, </span>
+<span id="cb3-2"><a href="#cb3-2"></a>       <span class="dt">L =</span> L, <span class="dt">PS =</span> <span class="st">&quot;logit&quot;</span>, <span class="dt">Reg =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">nboot =</span> <span class="dv">10</span>)<span class="op">$</span>ace</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#&gt; [1] 0.9239741</span></span></code></pre></div>
+<p>Even if we assume the misspecified propensity score by omiting <span class="math inline">\(Z_2\)</span>, proposed estimator still consistent.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">dr_rml</span>(<span class="dt">Y =</span> Y, <span class="dt">Censor =</span> Censor, <span class="dt">A =</span> A, <span class="dt">Xps =</span> X[,<span class="op">-</span><span class="dv">2</span>], <span class="dt">Xreg =</span> X, </span>
+<span id="cb4-2"><a href="#cb4-2"></a>       <span class="dt">L =</span> L, <span class="dt">PS =</span> <span class="st">&quot;logit&quot;</span>, <span class="dt">Reg =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">nboot =</span> <span class="dv">10</span>)<span class="op">$</span>ace</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#&gt; [1] 0.9081149</span></span></code></pre></div>
+<p>For flexible estimation, we may alternatively use other machine learning methods. For example, we estimate the propensity score model from super learner (<code>PS = &quot;SL&quot;</code>)</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">dr_rml</span>(<span class="dt">Y =</span> Y, <span class="dt">Censor =</span> Censor, <span class="dt">A =</span> A, <span class="dt">Xps =</span> X, <span class="dt">Xreg =</span> X,</span>
+<span id="cb5-2"><a href="#cb5-2"></a>       <span class="dt">L =</span> L, <span class="dt">PS =</span> <span class="st">&quot;SL&quot;</span>, <span class="dt">Reg =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">nboot =</span> <span class="dv">10</span>)<span class="op">$</span>ace</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">#&gt; Loading required package: nnls</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">#&gt; Loading required package: gam</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">#&gt; Loading required package: splines</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">#&gt; Loading required package: foreach</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">#&gt; Warning: package &#39;foreach&#39; was built under R version 4.0.5</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">#&gt; Loaded gam 1.20</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">#&gt; Super Learner</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; Version: 2.0-28</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">#&gt; Package created on 2021-05-04</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">#&gt; [1] 0.9156718</span></span></code></pre></div>
+<p>Below example is the GSE6532 data (Loi et al., 2007) application in the article.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">data</span>(gse)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>Y =<span class="st"> </span>gse<span class="op">$</span>Y</span>
+<span id="cb6-3"><a href="#cb6-3"></a>Censor =<span class="st"> </span>gse<span class="op">$</span>Censor</span>
+<span id="cb6-4"><a href="#cb6-4"></a>A =<span class="st"> </span>gse<span class="op">$</span>trt</span>
+<span id="cb6-5"><a href="#cb6-5"></a>X =<span class="st"> </span>gse[, <span class="dv">3</span><span class="op">:</span><span class="dv">6</span>]</span>
+<span id="cb6-6"><a href="#cb6-6"></a>L =<span class="st"> </span><span class="dv">365</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="kw">dr_rml</span>(<span class="dt">Y =</span> Y, <span class="dt">Censor =</span> Censor, <span class="dt">A =</span> A, <span class="dt">Xps =</span> X, <span class="dt">Xreg =</span> X,</span>
+<span id="cb6-8"><a href="#cb6-8"></a>       <span class="dt">L =</span> L, <span class="dt">PS =</span> <span class="st">&quot;logit&quot;</span>, <span class="dt">Reg =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">nboot =</span> <span class="dv">10</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co">#&gt; $mu1</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">#&gt; [1] 1614.207</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">#&gt; </span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="co">#&gt; $mu0</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="co">#&gt; [1] 1522.581</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="co">#&gt; </span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="co">#&gt; $ace</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="co">#&gt; [1] 91.62607</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="co">#&gt; </span></span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co">#&gt; $se</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="co">#&gt; [1] 101.0599</span></span></code></pre></div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li><p>Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. .</p></li>
+<li><p>Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. , (10), 1239–1246.</p></li>
+</ul>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
