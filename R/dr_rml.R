@@ -41,7 +41,7 @@ NULL
 #' @references 
 #' Cao, W., Tsiatis, A. A., & Davidian, M. (2009). Improving efficiency and robustness of the doubly robust estimator for a population mean with incomplete data. \emph{Biometrika}, \bold{96}(3), 723--734.
 #' 
-#' Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. \emph{In revision}.
+#' Choi, S., Choi, T., Lee, H-Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. In revision, \emph{Pharmaceutical Statistics}.
 #' 
 #' 
 #' @examples
