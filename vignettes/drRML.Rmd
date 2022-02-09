@@ -51,16 +51,13 @@ See Choi et al. (2022+) for more detailed description of the method.
 
 
 
-## Installation
-```{r}
-library(devtools)
-devtools::install_github(repo='taehwa015/drRML')
+## Usage for `dr_rml()`
+
+`dr_rml()` function has the following arguments:
+```{r,eval = FALSE}
+dr_rml(Y, Censor, A, Xps, Xreg, L, PS, Reg, nboot)
 ```
-
-
-## Usage
-
-The `drRML` package provides a double-robust estimator for differences in restricted mean lifetimes using pseudo-observations.
+see the detailed description from `help(dr_rml)`.
 
 Below example is one of simulation set-up in Choi et al. (2022+).
 Simulated event time variable involves three covariates
@@ -68,6 +65,7 @@ $Z=(Z_1,Z_2,Z_3)'$ distributed as multivariate normal with mean zero, unit varia
 Then the event time $T$ is generated from an exponential distribution with rate $\exp(-3-Z_1-0.9 Z_2-Z_3)$ for treatment $A=1$, and $\exp(-2.5-1.5Z_1-Z_2-0.7Z_3)$ for $A=0$.
 The censoring time $C$ follows an exponential with rate $e^{-4.5}$, yielding approximately 25\% censoring.
 ```{r}
+library(drRML)
 simdata = function(n, tau) {
   require(mvtnorm)
   expit = function(x) exp(x) / (1 + exp(x))
@@ -128,9 +126,8 @@ dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
        L = L, PS = "SL", Reg = "lm", nboot = 10)$ace
 ```
 
-Below example is the GSE6532 data application in the article.
+Below example is the GSE6532 data (Loi et al., 2007) application in the article.
 ```{r}
-library(drRML)
 data(gse)
 Y = gse$Y
 Censor = gse$Censor
@@ -142,4 +139,8 @@ dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
 ```
 
 
+# References
 
+* Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. \emph{In revision}.
+
+* Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. \emph{Journal of clinical oncology}, \bold{25}(10), 1239--1246.
