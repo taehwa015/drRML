@@ -65,8 +65,7 @@ see Choi et al., (2022+) for detailed method explanation.
 \dontrun{
 simdata = function(n, tau) {
   require(mvtnorm)
-  expit = function(x)
-    exp(x) / (1 + exp(x))
+  expit = function(x) exp(x) / (1 + exp(x))
   Sigma = diag(rep(1, 3))
   Sigma[1, 3] = Sigma[3, 1] = 0.2
   Z = rmvnorm(n,

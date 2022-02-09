@@ -48,8 +48,7 @@ NULL
 #' \dontrun{
 #' simdata = function(n, tau) {
 #'   require(mvtnorm)
-#'   expit = function(x)
-#'     exp(x) / (1 + exp(x))
+#'   expit = function(x) exp(x) / (1 + exp(x))
 #'   Sigma = diag(rep(1, 3))
 #'   Sigma[1, 3] = Sigma[3, 1] = 0.2
 #'   Z = rmvnorm(n,
@@ -129,10 +128,10 @@ dr_rml = function(Y, Censor, A, Xps, Xreg, L, PS = c("logit", "logit2", "SL", "G
     formul = as.formula("A~.")
     if (PS == "logit") {
       mod.p = stats::glm(formul, family = stats::binomial(), data = dat)
-      p.1 = stats::predict.glm(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
+      p.1 = stats::predict.glm(mod.p, type = "response")  
     } else if (PS == "logit2") {
       mod.p = stats::glm(formul, family = stats::binomial(), data = dat)
-      p.10 = stats::predict.glm(mod.p, type = "response")  # p.1 = Prob(A=1|Z)
+      p.10 = stats::predict.glm(mod.p, type = "response") 
       
       d = log(mean(A * (1 + exp(p.10)) / exp(p.10)))
       p.1 = as.numeric(exp(d + p.10) / (1 + exp(p.10)))
