@@ -137,6 +137,7 @@ dr_rml = function(Y, Censor, A, Xps, Xreg, L, PS = c("logit", "logit2", "SL", "G
       d = log(mean(A * (1 + exp(p.10)) / exp(p.10)))
       p.1 = as.numeric(exp(d + p.10) / (1 + exp(p.10)))
     } else if (PS == "SL") {
+      library(SuperLearner)
       options(warn = -1)
       Xt = with(dat, model.matrix(as.formula(paste0("~-1+", paste0("X", 1:p1, collapse = "+")))))
       Xt = as.data.frame(Xt)
@@ -148,6 +149,7 @@ dr_rml = function(Y, Censor, A, Xps, Xreg, L, PS = c("logit", "logit2", "SL", "G
       )
       p.1 = slpi$SL.predict
     } else if (PS == "GBM") {
+      library(gbm)
       gfit = gbm::gbm(formul, data = dat, distribution = "bernoulli")
       p.1 = gbm::predict.gbm(gfit, dat, n.trees = 100, type = "response")
     }
@@ -164,6 +166,7 @@ dr_rml = function(Y, Censor, A, Xps, Xreg, L, PS = c("logit", "logit2", "SL", "G
       mod.m1 = predict(lm(formul, data = subset(dat, A == 1), weights = wt1), dat)
       mod.m0 = predict(lm(formul, data = subset(dat, A == 0), weights = wt0), dat)
     } else if (Reg == "SL") {
+      library(SuperLearner)
       Xt = with(dat, model.matrix(as.formula(paste0("~-1+", paste0("X", 1:p2, collapse = "+")))))
       Xt = as.data.frame(Xt)
       mod.m0 = with(dat,
