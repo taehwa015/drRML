@@ -63,7 +63,7 @@ NULL
 #'   A = rbinom(n, 1, expit(-0.5 * Z1 - 0.5 * Z2))# Z1 and Z2 are involved in trt assignment
 #'   par.t = exp((-2.5 - 1.5 * Z1 - 1 * Z2 - 0.7 * Z3) * (A == 0) +
 #'                 (-3 - 1 * Z1 - 0.9 * Z2 - 1 * Z3) * (A == 1))
-#'   T = rexp(n, par.t)                   # true surv time
+#'   T = rexp(n, par.t)                   # true survival time
 #'   C = rexp(n, tau)                     # independent censoring
 #'   # tau as a controller of censoring rate
 #'   Y = pmin(T, C)                       # observed time
