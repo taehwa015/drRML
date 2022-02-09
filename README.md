@@ -52,5 +52,8 @@ cf = mean(cffit$predictions)
 }
 ```
 
+## Reference
+
+Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. In revision, \emph{Pharmaceutical Statistics}.
 
 
