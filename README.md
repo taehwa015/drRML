@@ -14,6 +14,10 @@ devtools::install_github(repo='taehwa015/drRML')
 
 The code provided here is only being provided for research purposes.
 
+## Documentation
+
+Vignette is available at [here](https://github.com/taehwa015/drRML/blob/master/vignettes/drRML.html)
+
 ## Usage
 
 The `drRML` package provides a double-robust estimator for differences in restricted mean lifetimes using pseudo-observations.
