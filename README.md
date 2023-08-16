@@ -21,7 +21,7 @@ Vignette is available at [here](http://htmlpreview.github.io/?https://github.com
 ## Usage
 
 The `drRML` package provides a double-robust estimator for differences in restricted mean lifetimes using pseudo-observations.
-See Choi et al. (2022+) for more detailed description of the method.
+See Choi et al. (2022) for more detailed description of the method.
 
 Below example is the GSE6532 data application in the article.
 ```r
@@ -54,6 +54,6 @@ cf = mean(cffit$predictions)
 
 ## Reference
 
-Choi, S., Choi, T., Lee, H-Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations, *Pharmaceutical Statistics*, In press.
+Choi, S., Choi, T., Lee, H-Y., Han, S. W., Bandyopadhyay, D. (2022). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations, *Pharmaceutical Statistics*, 21(6), 1185-1198.
 
 
