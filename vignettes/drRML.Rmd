@@ -24,10 +24,14 @@ knitr::opts_chunk$set(
 
 `drRML` is the R package to estimate differences in restricted mean lifetimes (RML) of two treatments using pseudo-observations.
 Define $T$ and $C$ as the event time and right-censoring times, respectively.
-Then we observe $\{Y_i = T_i\wedge C_i,\Delta_i = I(T_i\le C_i),Z_i\}_{i=1}^n$, 
+Suppose we are interested in comparing treatment effect between 
+treated group ($A=1$) and untreated group ($A=0$)
+with respect to the mean lifetime up to a time point $L$,
+defined as $\mu = E\{\min(T,L)\}$.
+Then we observe $\{Y_i = T_i\wedge C_i,\Delta_i = I(T_i\le C_i),A_i,Z_i\}_{i=1}^n$, 
 where $Z_i$ is $p-$dimensional baseline covariate vector.
 We adopt the pseudo-observation (available in `pseudo` R package)
-to replace unknown event times,
+to replace unknown event times with their respective consistent jackknife-type estimates,
 $$
 \hat \theta^*_{i}
 	= n\cdot\int_{0}^{L}\hat{S}(t) dt - (n-1)\cdot\int_{0}^{L}\hat{S}^{-i}(t)dt,
@@ -126,7 +130,7 @@ dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
        L = L, PS = "SL", Reg = "lm", nboot = 10)$ace
 ```
 
-Below example is the GSE6532 data (Loi et al., 2007) application in the article.
+Below example is the GSE6532 data (Loi et al., 2007) application in the article (Choi et al., 2022+).
 ```{r}
 data(gse)
 Y = gse$Y
@@ -137,10 +141,11 @@ L = 365 * 5
 dr_rml(Y = Y, Censor = Censor, A = A, Xps = X, Xreg = X,
        L = L, PS = "logit", Reg = "lm", nboot = 10)
 ```
+The estiamted average causal effect with 5-year RML $\hat\delta=91.62$ implies that the Tamoxifen (coded as 1) is positive treatment for time-to-distant metastasis free.
+
+## References
+
+* Choi, S., Choi, T., Lee, H-Y., Han, S. W., Bandyopadhyay, D. (2022). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations, *Pharmaceutical Statistics*, 21(6), 1185--1198.
 
 
-# References
-
-* Choi, S., Choi, T., Lee, H. Y., Han, S. W., Bandyopadhyay, D. (2022+). Double-robust methods for estimating differences in restricted mean lifetimes using pseudo-observations. \emph{In revision}.
-
-* Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. \emph{Journal of clinical oncology}, \bold{25}(10), 1239--1246.
+* Loi, S., Haibe-Kains, B., Desmedt, C., et al. (2007). Definition of clinically distinct molecular subtypes in estrogen receptor-positive breast carcinomas through genomic grade. *Journal of clinical oncology*, **25**(10), 1239--1246.
